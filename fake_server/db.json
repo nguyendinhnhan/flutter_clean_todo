@@ -1,0 +1,10 @@
+{
+  "todos": [
+    {
+      "id": "1",
+      "title": "First Todo",
+      "description": "This is the first todo",
+      "isCompleted": false
+    }
+  ]
+}
