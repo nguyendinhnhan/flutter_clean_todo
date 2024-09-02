@@ -3,10 +3,12 @@ import '../../domain/repositories/todo_repository.dart';
 import '../data_sources/todo_local_data_source.dart';
 import '../data_sources/todo_remote_data_source.dart';
 import '../models/todo_model.dart';
+import 'sync_queue.dart';
 
 class TodoRepositoryImpl implements TodoRepository {
   final TodoLocalDataSource localDataSource;
   final TodoRemoteDataSource remoteDataSource;
+  final SyncQueue syncQueue = SyncQueue();
 
   TodoRepositoryImpl({
     required this.localDataSource,
@@ -16,13 +18,36 @@ class TodoRepositoryImpl implements TodoRepository {
   @override
   Future<List<Todo>> getTodos() async {
     try {
+      // Fetch remote todos
       final remoteTodos = await remoteDataSource.getTodosFromRemote();
-      // Optionally, you could save these to local for offline access.
+      for (var todo in remoteTodos) {
+        print('getTodos remoteTodos: $todo');
+      }
+      // Sync local storage with remote todos
+      await _syncLocalWithRemote(remoteTodos);
       return remoteTodos;
     } catch (e) {
-      // Fallback to local data if remote fetch fails.
-      final todoModels = await localDataSource.getTodosFromLocal();
-      return todoModels.map((model) => model).toList();
+      print('getTodos error: $e');
+      final localTodos = await localDataSource.getTodosFromLocal();
+      for (var todo in localTodos) {
+        print('getTodos localTodos: $todo');
+      }
+      return localTodos;
+    }
+  }
+
+  Future<void> _syncLocalWithRemote(List<TodoModel> remoteTodos) async {
+    // Get current local todos
+    final localTodos = await localDataSource.getTodosFromLocal();
+    // Create a set of local todo IDs for quick lookup
+    final localTodoIds = localTodos.map((todo) => todo.id).toSet();
+
+    // Only add remote todos that don't already exist in local storage
+    for (var remoteTodo in remoteTodos) {
+      print('_syncLocalWithRemote $remoteTodo');
+      if (!localTodoIds.contains(remoteTodo.id)) {
+        await localDataSource.saveTodoToLocal(remoteTodo);
+      }
     }
   }
 
@@ -34,9 +59,9 @@ class TodoRepositoryImpl implements TodoRepository {
       description: todo.description,
       isCompleted: todo.isCompleted,
     );
-    await remoteDataSource.addTodoToRemote(todoModel);
-    await localDataSource
-        .saveTodoToLocal(todoModel); // Optional: Save to local as well.
+    await localDataSource.saveTodoToLocal(todoModel);
+    // Queue syncing with remote
+    _trySync(() => remoteDataSource.addTodoToRemote(todoModel));
   }
 
   @override
@@ -47,15 +72,30 @@ class TodoRepositoryImpl implements TodoRepository {
       description: todo.description,
       isCompleted: todo.isCompleted,
     );
-    await remoteDataSource.updateTodoInRemote(todoModel);
-    await localDataSource
-        .updateTodoInLocal(todoModel); // Optional: Save to local as well.
+    await localDataSource.updateTodoInLocal(todoModel);
+    // Queue syncing with remote
+    _trySync(() => remoteDataSource.updateTodoInRemote(todoModel));
   }
 
   @override
   Future<void> deleteTodo(String id) async {
-    await remoteDataSource.deleteTodoFromRemote(id);
-    await localDataSource
-        .deleteTodoFromLocal(id); // Optional: Save to local as well.
+    await localDataSource.deleteTodoFromLocal(id);
+    // Queue syncing with remote
+    _trySync(() => remoteDataSource.deleteTodoFromRemote(id));
+  }
+
+  void _trySync(Future<void> Function() syncFunction) async {
+    try {
+      await syncFunction();
+    } catch (e) {
+      print("_trySync error: $e");
+      // Add to sync queue if sync fails
+      syncQueue.addToQueue(syncFunction);
+    }
+  }
+
+  // Call this method on network connectivity changes
+  void onNetworkAvailable() {
+    syncQueue.processQueue();
   }
 }

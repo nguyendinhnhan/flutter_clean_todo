@@ -18,6 +18,7 @@ class TodoLocalDataSourceImpl implements TodoLocalDataSource {
   @override
   Future<List<TodoModel>> getTodosFromLocal() async {
     final todosString = sharedPreferences.getString(todosKey);
+    print('todosString $todosString');
     if (todosString != null && todosString.isNotEmpty) {
       final List<dynamic> decodedJson = json.decode(todosString);
       return decodedJson
@@ -29,6 +30,7 @@ class TodoLocalDataSourceImpl implements TodoLocalDataSource {
 
   @override
   Future<void> saveTodoToLocal(TodoModel todo) async {
+    print('saveTodoToLocal $todo');
     final todos = await getTodosFromLocal();
     todos.add(todo);
     final String todosString =

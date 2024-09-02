@@ -11,6 +11,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
       emit(TodoLoading());
       try {
         final todos = await repository.getTodos();
+        print('TodoBloc todos: $todos');
         emit(TodoLoaded(todos));
       } catch (error) {
         emit(TodoError("Failed to load todos"));

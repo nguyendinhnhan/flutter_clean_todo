@@ -12,6 +12,7 @@ class TodoList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("TodoList todos: $todos");
     if (todos.isEmpty) {
       return const Center(child: Text('No todos available.'));
     }
@@ -19,6 +20,7 @@ class TodoList extends StatelessWidget {
       itemCount: todos.length,
       itemBuilder: (context, index) {
         final todo = todos[index];
+        print('itemBuilder todo.id: ${todo.id}');
         return TodoListItem(
           todo: todo,
           onDelete: (id) {

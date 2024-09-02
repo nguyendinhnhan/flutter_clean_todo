@@ -9,6 +9,7 @@ import 'presentation/blocs/todo_event.dart';
 import 'presentation/pages/todo_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'services/connectivity_service.dart';
 
 void clearLocalStorage() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -35,6 +36,11 @@ void main() async {
   final todoRepository = TodoRepositoryImpl(
       localDataSource: todoLocalDataSource,
       remoteDataSource: todoRemoteDataSource);
+
+  final connectivityService = ConnectivityService();
+  connectivityService.monitorNetworkChanges(() {
+    todoRepository.onNetworkAvailable();
+  });
 
   runApp(MyApp(todoRepository: todoRepository));
 }
