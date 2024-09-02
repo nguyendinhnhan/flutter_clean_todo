@@ -39,17 +39,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Todo App',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: RepositoryProvider.value(
-        value: todoRepository,
-        child: BlocProvider(
-          create: (context) => TodoBloc(todoRepository)..add(LoadTodos()),
-          child: const TodoPage(),
+    return RepositoryProvider.value(
+      value: todoRepository,
+      child: BlocProvider(
+        create: (context) => TodoBloc(todoRepository)..add(LoadTodos()),
+        child: MaterialApp(
+          title: 'Todo App',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+          ),
+          home: const TodoPage(),
         ),
       ),
     );

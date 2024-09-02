@@ -22,6 +22,11 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
       add(LoadTodos());
     });
 
+    on<UpdateTodoEvent>((event, emit) async {
+      await repository.updateTodo(event.todo);
+      add(LoadTodos());
+    });
+
     on<DeleteTodoEvent>((event, emit) async {
       await repository.deleteTodo(event.id);
       add(LoadTodos());

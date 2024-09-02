@@ -26,11 +26,25 @@ class TodoPage extends StatelessWidget {
                 return ListTile(
                   title: Text(todo.title),
                   subtitle: Text(todo.description),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () {
-                      context.read<TodoBloc>().add(DeleteTodoEvent(todo.id));
-                    },
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.edit),
+                        onPressed: () {
+                          // Show a dialog to edit the todo
+                          _showEditDialog(context, todo);
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () {
+                          context
+                              .read<TodoBloc>()
+                              .add(DeleteTodoEvent(todo.id));
+                        },
+                      ),
+                    ],
                   ),
                 );
               },
@@ -57,6 +71,55 @@ class TodoPage extends StatelessWidget {
         },
         child: const Icon(Icons.add),
       ),
+    );
+  }
+
+  void _showEditDialog(BuildContext context, Todo todo) {
+    final titleController = TextEditingController(text: todo.title);
+    final descriptionController = TextEditingController(text: todo.description);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Edit Todo'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: titleController,
+                decoration: const InputDecoration(labelText: 'Title'),
+              ),
+              TextField(
+                controller: descriptionController,
+                decoration: const InputDecoration(labelText: 'Description'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final updatedTodo = Todo(
+                  id: todo.id,
+                  title: titleController.text,
+                  description: descriptionController.text,
+                  isCompleted: todo.isCompleted,
+                );
+
+                context.read<TodoBloc>().add(UpdateTodoEvent(updatedTodo));
+                Navigator.of(context).pop();
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

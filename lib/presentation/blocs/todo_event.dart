@@ -10,6 +10,12 @@ class AddTodoEvent extends TodoEvent {
   AddTodoEvent(this.todo);
 }
 
+class UpdateTodoEvent extends TodoEvent {
+  final Todo todo;
+
+  UpdateTodoEvent(this.todo);
+}
+
 class DeleteTodoEvent extends TodoEvent {
   final String id;
 
