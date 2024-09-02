@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'data/data_sources/sync_queue_data_source.dart';
 import 'data/data_sources/todo_local_data_source.dart';
 import 'data/data_sources/todo_remote_data_source.dart';
 import 'data/repositories/todo_repository_impl.dart';
@@ -31,11 +32,13 @@ void main() async {
   final todoRemoteDataSource = TodoRemoteDataSourceImpl(
     client: client,
   );
+  final syncQueueDataSource = SyncQueueDataSource(sharedPreferences);
 
   // Create the TodoRepository implementation
   final todoRepository = TodoRepositoryImpl(
       localDataSource: todoLocalDataSource,
-      remoteDataSource: todoRemoteDataSource);
+      remoteDataSource: todoRemoteDataSource,
+      syncQueueDataSource: syncQueueDataSource);
 
   final connectivityService = ConnectivityService();
   connectivityService.monitorNetworkChanges(() {
