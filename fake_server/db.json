@@ -4,6 +4,12 @@
       "id": "1",
       "title": "First Todo",
       "description": "This is the first todo",
+      "isCompleted": true
+    },
+    {
+      "id": "2024-09-02 17:30:54.477912",
+      "title": "Second Todo",
+      "description": "this is second todo",
       "isCompleted": false
     }
   ]
