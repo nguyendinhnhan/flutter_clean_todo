@@ -10,4 +10,13 @@ class Todo {
     required this.description,
     this.isCompleted = false,
   });
+
+  Todo copyWith({bool? isCompleted}) {
+    return Todo(
+      id: id,
+      title: title,
+      description: description,
+      isCompleted: isCompleted ?? this.isCompleted,
+    );
+  }
 }

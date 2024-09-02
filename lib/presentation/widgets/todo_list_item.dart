@@ -15,25 +15,51 @@ class TodoListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(todo.title),
-      subtitle: Text(todo.description),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () {
-              _showEditDialog(context, todo);
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: () {
-              onDelete(todo.id);
-            },
-          ),
-        ],
+    return Dismissible(
+      key: Key(todo.id),
+      onDismissed: (direction) {
+        onDelete(todo.id);
+      },
+      background: Container(
+        color: Colors.red,
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: const Icon(Icons.delete),
+      ),
+      child: ListTile(
+        title: Text(todo.title,
+            style: TextStyle(
+                decoration: todo.isCompleted
+                    ? TextDecoration.lineThrough
+                    : TextDecoration.none)),
+        subtitle: Text(todo.description,
+            style: TextStyle(
+                decoration: todo.isCompleted
+                    ? TextDecoration.lineThrough
+                    : TextDecoration.none)),
+        leading: Checkbox(
+          value: todo.isCompleted,
+          onChanged: (value) {
+            onUpdate(todo.copyWith(isCompleted: value ?? false));
+          },
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: () {
+                _showEditDialog(context, todo);
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () {
+                onDelete(todo.id);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
