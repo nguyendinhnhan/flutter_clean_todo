@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../../domain/entities/todo.dart';
 import '../../domain/repositories/todo_repository.dart';
 import '../data_sources/todo_local_data_source.dart';
@@ -10,11 +12,17 @@ class TodoRepositoryImpl implements TodoRepository {
   final TodoRemoteDataSource remoteDataSource;
   final SyncQueueDataSource syncQueueDataSource;
 
+  final StreamController<void> _syncStreamController =
+      StreamController.broadcast();
+
   TodoRepositoryImpl({
     required this.localDataSource,
     required this.remoteDataSource,
     required this.syncQueueDataSource,
   });
+
+  @override
+  Stream<void> get onSyncCompleted => _syncStreamController.stream;
 
   @override
   Future<List<Todo>> getTodos() async {
@@ -126,7 +134,12 @@ class TodoRepositoryImpl implements TodoRepository {
     await syncQueueDataSource.clearQueue();
   }
 
-  void onNetworkAvailable() {
-    processSyncQueue();
+  Future<void> onNetworkAvailable() async {
+    await processSyncQueue();
+    _syncStreamController.add(null); // Notify listeners that sync is completed
+  }
+
+  void dispose() {
+    _syncStreamController.close();
   }
 }

@@ -41,8 +41,8 @@ void main() async {
       syncQueueDataSource: syncQueueDataSource);
 
   final connectivityService = ConnectivityService();
-  connectivityService.monitorNetworkChanges(() {
-    todoRepository.onNetworkAvailable();
+  connectivityService.monitorNetworkChanges(() async {
+    await todoRepository.onNetworkAvailable();
   });
 
   runApp(MyApp(todoRepository: todoRepository));

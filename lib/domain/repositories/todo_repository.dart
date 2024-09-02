@@ -5,4 +5,5 @@ abstract class TodoRepository {
   Future<void> addTodo(Todo todo);
   Future<void> updateTodo(Todo todo);
   Future<void> deleteTodo(String id);
+  Stream<void> get onSyncCompleted;
 }

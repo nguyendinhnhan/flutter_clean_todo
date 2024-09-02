@@ -31,5 +31,10 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
       await repository.deleteTodo(event.id);
       add(LoadTodos());
     });
+
+    // Listen to the repository's sync stream
+    repository.onSyncCompleted.listen((_) {
+      add(LoadTodos());
+    });
   }
 }
