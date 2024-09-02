@@ -17,7 +17,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Clear local storage on app startup
-  clearLocalStorage();
+  // clearLocalStorage();
 
   // Initialize SharedPreferences
   final sharedPreferences = await SharedPreferences.getInstance();
