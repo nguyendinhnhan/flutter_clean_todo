@@ -1,6 +1,13 @@
-# flutter_clean_todo
+### Flutter Todo with clean architecture
 
-Refer Link: https://chatgpt.com/share/238c66fa-56b3-4f02-a713-b7feda4c7e75
+1. Initial fake sever
+```cd fake_server; yarn; cd ..;```
+2. Run fake server
+```cd fake_server; yarn start; cd ..```
+3. Initial flutter project
+```flutter pub get```
+4. Run flutter app
+```flutter run```
 
 **Clean Architecture pattern with the BLoC (Business Logic Component) pattern:**
 
