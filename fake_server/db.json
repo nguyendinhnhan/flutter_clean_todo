@@ -2,14 +2,8 @@
   "todos": [
     {
       "id": "2024-09-02 19:21:58.192109",
-      "title": "todo 1",
-      "description": "description 1",
-      "isCompleted": false
-    },
-    {
-      "id": "2024-09-02 20:43:57.263892",
-      "title": "bbbb",
-      "description": "asdasdaf",
+      "title": "Todo 1",
+      "description": "Description 1",
       "isCompleted": true
     }
   ]
